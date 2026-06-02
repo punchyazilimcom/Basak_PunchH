@@ -9,6 +9,7 @@ import { useAuth, subeyiGorebilir } from '@/hooks/useAuth';
 import { useDonem } from '@/hooks/useDonem';
 import { donemVerisiniGetir } from '@/lib/veri';
 import { donemiExcelAktar } from '@/lib/excel';
+import { donemiPdfAktar } from '@/lib/pdf';
 
 export default function Araclar() {
   const { oturum } = useAuth();
@@ -45,11 +46,30 @@ export default function Araclar() {
     }
   }
 
+  async function pdfAktar() {
+    if (!seciliDonem || mesgul) return;
+    setMesgul('pdf');
+    setHata(null);
+    try {
+      const { firmalar, hareketler, devirler } = await veriHazirla();
+      donemiPdfAktar(seciliDonem, firmalar, hareketler, devirler);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      setHata('PDF dışa aktarma başarısız.');
+    } finally {
+      setMesgul(null);
+    }
+  }
+
   return (
     <div style={kutu}>
       <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>Araçlar:</span>
       <button className="basak-btn" style={btn} onClick={excelAktar} disabled={!!mesgul || !seciliDonem}>
         {mesgul === 'excel' ? 'Hazırlanıyor…' : '⬇ Excel’e Aktar'}
+      </button>
+      <button className="basak-btn" style={btn} onClick={pdfAktar} disabled={!!mesgul || !seciliDonem}>
+        {mesgul === 'pdf' ? 'Hazırlanıyor…' : '⬇ PDF İndir'}
       </button>
       {hata && <span style={{ color: 'var(--durum-borclu)', fontSize: '0.8rem' }}>{hata}</span>}
     </div>
