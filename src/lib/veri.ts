@@ -243,3 +243,83 @@ export async function yeniDonemAc(mevcutDonemId: string): Promise<Donem> {
   await batch.commit();
   return yeniDonem;
 }
+
+// ---- TEK SEFERLİK TOPLU OKUMA (dışa aktarma / yedek için) ------------------
+
+/** Bir dönemin tüm verisini (firmalar + o döneme ait hareket/devir) tek seferde getirir. */
+export async function donemVerisiniGetir(donemId: string): Promise<{
+  firmalar: Firma[];
+  hareketler: Hareket[];
+  devirler: Devir[];
+}> {
+  const [fSnap, hSnap, dSnap] = await Promise.all([
+    getDocs(query(firmaKol, orderBy('ad'))),
+    getDocs(query(hareketKol, where('donemId', '==', donemId))),
+    getDocs(query(collection(db, 'devirler'), where('donemId', '==', donemId))),
+  ]);
+  return {
+    firmalar: fSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Firma, 'id'>) })),
+    hareketler: hSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Hareket, 'id'>) })),
+    devirler: dSnap.docs.map((d) => d.data() as Devir),
+  };
+}
+
+/** Tüm veritabanını (tüm koleksiyonlar) tek seferde getirir — yedek için. */
+export async function tumVeriyiGetir(): Promise<{
+  donemler: Donem[];
+  firmalar: Firma[];
+  hareketler: Hareket[];
+  devirler: Devir[];
+}> {
+  const [donSnap, fSnap, hSnap, dSnap] = await Promise.all([
+    getDocs(donemKol),
+    getDocs(firmaKol),
+    getDocs(hareketKol),
+    getDocs(collection(db, 'devirler')),
+  ]);
+  return {
+    donemler: donSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Donem, 'id'>) })),
+    firmalar: fSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Firma, 'id'>) })),
+    hareketler: hSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Hareket, 'id'>) })),
+    devirler: dSnap.docs.map((d) => d.data() as Devir),
+  };
+}
+
+/**
+ * Yedekten geri yükleme: verilen veri kümesini Firestore'a yazar (üzerine yazar).
+ * Mevcut id'ler korunur. Büyük veri için 500'lük batch'lere bölünür.
+ */
+export async function veriyiGeriYukle(yedek: {
+  donemler?: Donem[];
+  firmalar?: Firma[];
+  hareketler?: Hareket[];
+  devirler?: Devir[];
+}): Promise<void> {
+  type Yazma = { ref: ReturnType<typeof doc>; veri: Record<string, unknown> };
+  const yazmalar: Yazma[] = [];
+
+  for (const d of yedek.donemler ?? []) {
+    const { id, ...rest } = d;
+    yazmalar.push({ ref: doc(db, 'donemler', id), veri: rest });
+  }
+  for (const f of yedek.firmalar ?? []) {
+    const { id, ...rest } = f;
+    yazmalar.push({ ref: doc(db, 'firmalar', id), veri: rest });
+  }
+  for (const h of yedek.hareketler ?? []) {
+    const { id, ...rest } = h;
+    yazmalar.push({ ref: doc(db, 'hareketler', id), veri: rest });
+  }
+  for (const dv of yedek.devirler ?? []) {
+    yazmalar.push({ ref: doc(db, 'devirler', devirId(dv.firmaId, dv.donemId)), veri: { ...dv } });
+  }
+
+  // 500'lük gruplar halinde yaz (Firestore batch sınırı)
+  for (let i = 0; i < yazmalar.length; i += 500) {
+    const batch = writeBatch(db);
+    for (const y of yazmalar.slice(i, i + 500)) {
+      batch.set(y.ref, y.veri);
+    }
+    await batch.commit();
+  }
+}

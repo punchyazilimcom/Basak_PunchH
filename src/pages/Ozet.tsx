@@ -21,6 +21,7 @@ import {
 import { tlBicimle } from '@/lib/hesaplama';
 import { useAuth, subeyiGorebilir } from '@/hooks/useAuth';
 import { useDonem } from '@/hooks/useDonem';
+import Araclar from '@/components/Araclar';
 
 interface Props {
   /** Bir firmaya tıklanınca cari ekranına geçiş (App tarafından sağlanır). */
@@ -83,6 +84,9 @@ export default function Ozet({ onFirmaSec }: Props) {
 
   return (
     <div style={{ padding: '1rem', display: 'grid', gap: '1rem' }}>
+      {/* Araçlar: dışa aktarma / yedek */}
+      <Araclar />
+
       {/* Büyük özet kart */}
       <div className="ozet-buyuk">
         <div className="basak-baslik" style={k.buyukSol}>
