@@ -9,6 +9,7 @@
 // Tasarım: siyah zemin başlık + sarı tuşlar (marka renkleri).
 // ---------------------------------------------------------------------------
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { pinKaydiVarMi, pinKaydiEkle, pinGecerliMi } from '@/lib/pin';
 import { firebaseConfigured } from '@/lib/firebase';
@@ -95,7 +96,12 @@ export default function PinGiris() {
 
   return (
     <div style={s.kapsayici}>
-      <div style={s.kart}>
+      <motion.div
+        style={s.kart}
+        initial={{ opacity: 0, y: 22, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
         <div className="basak-baslik" style={s.baslik}>
           <img
             src={`${import.meta.env.BASE_URL}logo.png`}
@@ -164,7 +170,7 @@ export default function PinGiris() {
             {mesgul ? 'Lütfen bekleyin…' : ilkKurulum ? 'PIN Belirle' : 'Giriş Yap'}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

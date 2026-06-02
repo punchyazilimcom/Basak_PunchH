@@ -11,6 +11,7 @@
 // İşlevsellik (kalan borç hesabı vb.) lib/ozet + lib/hesaplama'dan gelir.
 // ---------------------------------------------------------------------------
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Wallet,
   AlertTriangle,
@@ -56,6 +57,7 @@ import { donemEtiketi } from '@/lib/tarih';
 import { useAuth, subeyiGorebilir } from '@/hooks/useAuth';
 import { useDonem } from '@/hooks/useDonem';
 import Araclar from '@/components/Araclar';
+import Sayac from '@/components/Sayac';
 
 // Marka uyumlu lüks palet (altın / siyah / gri tonları)
 const PALET = ['#F4DF16', '#0c0c0c', '#E6CF00', '#9a9a9a', '#fad643', '#5b5b5b', '#fde98a', '#c9c9c9', '#7a6e00'];
@@ -164,26 +166,34 @@ export default function Ozet({ onFirmaSec }: Props) {
       <div className="ozet-kpi">
         <KpiKart
           baslik="Toplam Kalan Borç"
-          deger={tlBicimle(genelToplam)}
+          deger={genelToplam}
+          bicim={tlBicimle}
           ikon={<Wallet size={22} />}
           vurgu
+          gecikme={0}
         />
         <KpiKart
           baslik="Bekleyen / Gecikmiş"
-          deger={tlBicimle(bekleyen)}
+          deger={bekleyen}
+          bicim={tlBicimle}
           ikon={<AlertTriangle size={22} />}
           renk={bekleyen > 0 ? 'var(--durum-borclu)' : 'var(--durum-temiz)'}
+          gecikme={0.07}
         />
         <KpiKart
           baslik="Bu Dönem Ödenen"
-          deger={tlBicimle(odenen)}
+          deger={odenen}
+          bicim={tlBicimle}
           ikon={<Banknote size={22} />}
           renk="var(--durum-temiz)"
+          gecikme={0.14}
         />
         <KpiKart
           baslik="Firma Sayısı"
-          deger={String(gorunenFirmalar.length)}
+          deger={gorunenFirmalar.length}
+          bicim={(n) => String(Math.round(n))}
           ikon={<Building2 size={22} />}
+          gecikme={0.21}
         />
       </div>
 
@@ -324,23 +334,31 @@ export default function Ozet({ onFirmaSec }: Props) {
   );
 }
 
-/** KPI kartı. vurgu=true → siyah kart + altın değer (lüks birincil metrik). */
+/** KPI kartı (count-up + giriş + hover lift). vurgu=true → siyah kart + altın. */
 function KpiKart({
   baslik,
   deger,
+  bicim,
   ikon,
   vurgu,
   renk,
+  gecikme = 0,
 }: {
   baslik: string;
-  deger: string;
+  deger: number;
+  bicim: (n: number) => string;
   ikon: React.ReactNode;
   vurgu?: boolean;
   renk?: string;
+  gecikme?: number;
 }) {
   return (
-    <div
-      className="basak-kart kart-lift"
+    <motion.div
+      className="basak-kart"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, delay: gecikme, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -4 }}
       style={{
         padding: '1.1rem 1.2rem',
         display: 'flex',
@@ -366,10 +384,10 @@ function KpiKart({
             whiteSpace: 'nowrap',
           }}
         >
-          {deger}
+          <Sayac deger={deger} bicim={bicim} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
