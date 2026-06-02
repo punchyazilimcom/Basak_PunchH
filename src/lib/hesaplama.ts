@@ -35,3 +35,12 @@ export function tlBicimle(tutar: number): string {
     minimumFractionDigits: 2,
   }).format(tutar || 0);
 }
+
+/** Kısa para gösterimi (grafik eksenleri için): 391203 -> "391 B₺", 1.2M -> "1,2 M₺". */
+export function tlKisa(tutar: number): string {
+  const n = tutar || 0;
+  const mutlak = Math.abs(n);
+  if (mutlak >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.', ',') + ' M₺';
+  if (mutlak >= 1_000) return Math.round(n / 1_000) + ' B₺';
+  return n + ' ₺';
+}

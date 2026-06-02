@@ -74,3 +74,19 @@ export function bekleyenGecikmisToplam(hareketler: Hareket[]): number {
     .filter((h) => h.durum === 'Bekliyor' || h.durum === 'Gecikmiş')
     .reduce((acc, h) => acc + Math.max(0, (h.faturaTutari || 0) - (h.odenenTutar || 0)), 0);
 }
+
+/** Bir dönemdeki toplam ödenen tutar (KPI: "Bu Dönem Ödenen"). */
+export function odenenToplam(hareketler: Hareket[]): number {
+  return hareketler.reduce((acc, h) => acc + (h.odenenTutar || 0), 0);
+}
+
+/**
+ * Bir dönemin toplam kalan borcunu kayıtlardan doğrudan hesaplar
+ * (trend grafiği için): Σ Devir + Σ Fatura − Σ Ödenen.
+ */
+export function donemToplamKalan(hareketler: Hareket[], devirler: Devir[]): number {
+  const dev = devirler.reduce((a, d) => a + (d.tutar || 0), 0);
+  const fat = hareketler.reduce((a, h) => a + (h.faturaTutari || 0), 0);
+  const ode = hareketler.reduce((a, h) => a + (h.odenenTutar || 0), 0);
+  return dev + fat - ode;
+}
