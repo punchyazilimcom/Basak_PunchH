@@ -11,6 +11,7 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getAuth, signInAnonymously, type Auth } from 'firebase/auth';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 // Vite, "import.meta.env" üzerinden "VITE_" ön ekli değişkenleri sağlar.
 const firebaseConfig = {
@@ -36,6 +37,9 @@ if (!firebaseConfigured) {
 export const app: FirebaseApp = initializeApp(firebaseConfig);
 export const db: Firestore = getFirestore(app);
 export const auth: Auth = getAuth(app);
+// Otomatik yedeklerin yazılacağı depolama (best-effort; Storage etkin değilse
+// yedek işlemleri sessizce atlanır, uygulama çalışmaya devam eder).
+export const storage: FirebaseStorage = getStorage(app);
 
 // ---------------------------------------------------------------------------
 // Anonim oturum.

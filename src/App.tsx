@@ -7,9 +7,10 @@
 // Sayfa geçişi basit durum (state) ile yapılır; react-router ileride gerekirse
 // genişletilebilir.
 // ---------------------------------------------------------------------------
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { DonemProvider } from './hooks/useDonem';
+import { otomatikYedek } from './lib/yedek';
 import PinGiris from './pages/PinGiris';
 import FirmaCari from './pages/FirmaCari';
 import Ozet from './pages/Ozet';
@@ -83,6 +84,11 @@ function navBtn(aktif: boolean): React.CSSProperties {
 function IcerikKabugu() {
   const [sayfa, setSayfa] = useState<Sayfa>('ozet');
   const [seciliFirmaId, setSeciliFirmaId] = useState<string | null>(null);
+
+  // Otomatik günlük yedek (best-effort, günde 1 kez). Storage etkin değilse atlar.
+  useEffect(() => {
+    otomatikYedek();
+  }, []);
 
   // Özet'te bir firmaya tıklanınca cari ekranına geç ve o firmayı seç
   function firmayaGit(firmaId: string) {

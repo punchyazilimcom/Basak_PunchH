@@ -46,19 +46,40 @@ Sistemde hiç PIN yoksa giriş ekranı **ilk kurulum moduna** geçer: belirledi�
 ilk PIN **Yönetici** PIN'i olarak (hash'lenerek) kaydedilir. Sonra bu PIN ile
 giriş yapılır.
 
-## Faz 1 Kapsamı (bu sürüm)
+## Tamamlanan Fazlar
 
+**Faz 1 — Web Çekirdeği**
 - [x] Vite + React + TS iskeleti, modüler kurulum
 - [x] Firestore veri modeli + TypeScript tipleri
 - [x] PIN giriş (3 rol, SHA-256+salt hash, deneme sınırı)
 - [x] Firma Cari ekranı (devir + hareket + otomatik kalan borç)
 - [x] Firestore güvenlik kuralları
 
+**Faz 2 — Özet & Dönem**
+- [x] Özet panosu (toplam kalan borç, bekleyen/gecikmiş, bölüm/şube toplamları)
+- [x] Dönem sistemi (dönem seçici, "Yeni Dönem Aç", arşiv + otomatik devir)
+
+**Faz 3 — Dışa Aktarma & Yedek**
+- [x] Excel (.xlsx) dışa aktarma — SheetJS
+- [x] PDF dışa aktarma — jsPDF + autotable (siyah-sarı kurumsal)
+- [x] Manuel JSON yedek al / geri yükle (Yönetici)
+- [x] Otomatik günlük yedek (istemci + opsiyonel Cloud Function), 30 gün saklama
+
+### Otomatik yedek için Firebase Storage
+
+Otomatik günlük yedek `yedekler/` klasörüne yazar. Bunun için Firebase Console >
+**Storage**'ı etkinleştirin ve kuralları yayınlayın:
+
+```bash
+firebase deploy --only storage
+```
+
+Storage etkin değilse uygulama çalışmaya devam eder; otomatik yedek sessizce
+atlanır, manuel JSON yedek her zaman çalışır. Zamanlanmış Cloud Function örneği
+`functions/` klasöründedir (opsiyonel, Blaze planı gerekir).
+
 ## Sonraki Fazlar (henüz yapılmadı)
 
-2. Özet panosu + bölüm/şube toplamları
-3. Dönem sistemi (arşiv + otomatik devir)
-4. Excel/PDF dışa aktarma + otomatik yedek
 5. Tauri ile .exe paketleme
 6. Capacitor ile Android/iOS
 
