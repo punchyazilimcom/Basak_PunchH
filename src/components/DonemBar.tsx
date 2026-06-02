@@ -7,6 +7,7 @@
 //   - Geçmiş (kilitli) dönem seçiliyken "salt görüntüleme" uyarısı gösterilir.
 // ---------------------------------------------------------------------------
 import { useState } from 'react';
+import { CalendarDays, CalendarPlus, Lock } from 'lucide-react';
 import { useDonem } from '@/hooks/useDonem';
 import { useAuth, yoneticiMi } from '@/hooks/useAuth';
 import { donemEtiketi, sonrakiAy } from '@/lib/tarih';
@@ -46,16 +47,19 @@ export default function DonemBar() {
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '0.5rem 1rem',
-        background: 'var(--gri-zemin)',
-        borderBottom: '1px solid var(--gri-cizgi)',
+        padding: '0.6rem 1rem',
+        background: 'rgba(255,255,255,0.85)',
+        backdropFilter: 'saturate(180%) blur(8px)',
+        borderBottom: '1px solid var(--cizgi)',
         position: 'sticky',
         top: 0,
         zIndex: 15,
         flexWrap: 'wrap',
       }}
     >
-      <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Dönem:</span>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', fontWeight: 700 }}>
+        <CalendarDays size={16} /> Dönem:
+      </span>
 
       {/* Dönem seçici */}
       <select
@@ -63,7 +67,7 @@ export default function DonemBar() {
         value={seciliDonem?.id ?? ''}
         onChange={(e) => donemSec(e.target.value)}
         disabled={yukleniyor || donemler.length === 0}
-        style={{ padding: '0.3rem 0.5rem', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem' }}
+        style={{ padding: '0.35rem 0.6rem', fontWeight: 700, fontSize: '0.85rem' }}
       >
         {donemler.map((d) => (
           <option key={d.id} value={d.id}>
@@ -75,13 +79,13 @@ export default function DonemBar() {
 
       {/* Salt görüntüleme uyarısı */}
       {!duzenlenebilir && seciliDonem && (
-        <span style={{ fontSize: '0.8rem', color: 'var(--durum-borclu)', fontWeight: 700 }}>
-          ● Salt görüntüleme (kilitli/geçmiş dönem)
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.8rem', color: 'var(--durum-borclu)', fontWeight: 700 }}>
+          <Lock size={13} /> Salt görüntüleme
         </span>
       )}
       {duzenlenebilir && (
-        <span style={{ fontSize: '0.8rem', color: 'var(--durum-temiz)', fontWeight: 700 }}>
-          ● Aktif dönem (düzenlenebilir)
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: 'var(--durum-temiz)', fontWeight: 700 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--durum-temiz)' }} /> Aktif dönem
         </span>
       )}
 
@@ -98,7 +102,7 @@ export default function DonemBar() {
           disabled={calisiyor || !aktifDonem}
           title="Mevcut dönemi kilitler ve kalan borçları yeni döneme devreder"
         >
-          {calisiyor ? 'Açılıyor…' : '+ Yeni Dönem Aç'}
+          <CalendarPlus size={16} /> {calisiyor ? 'Açılıyor…' : 'Yeni Dönem Aç'}
         </button>
       )}
     </div>

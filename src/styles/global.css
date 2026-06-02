@@ -1,39 +1,48 @@
 /* ---------------------------------------------------------------------------
-   Başak — Premium tema (siyah / sarı / beyaz).
-   Renk kuralı (şartname Bölüm 8):
-     - Ana sarı:  #F4DF16  (Başak Sarısı)
-     - Siyah:     #000000
-     - Düzenlenebilir alanlar  -> sarı zemin / siyah yazı
-     - Başlık / salt-okunur     -> siyah zemin / sarı yazı
-   Font: Poppins (başlık) + Inter (gövde). Sade, modern, premium.
+   Başak — Premium AÇIK tema.
+     - Zemin: #FAFAFA, kartlar saf beyaz, ince yumuşak gölgeler (derinlik)
+     - Vurgu: Başak sarısı #F4DF16 (CTA, aktif, önemli) + siyah #000000 (lüks)
+     - Yuvarlatılmış köşeler (12-16px), bol beyaz boşluk, Inter/Poppins
+     - Temiz, ferah, profesyonel; abartı gradient yok.
 --------------------------------------------------------------------------- */
 :root {
   --basak-sari: #f4df16;
-  --basak-sari-koyu: #d8c40a;
-  --basak-siyah: #0a0a0a;
-  --basak-siyah-saf: #000000;
+  --basak-sari-koyu: #e6cf00;
+  --basak-siyah: #0c0c0c;
   --basak-beyaz: #ffffff;
 
-  /* Yardımcı tonlar */
-  --gri-cizgi: #e7e7e7;
-  --gri-zemin: #f3f3f1;
-  --gri-yazi: #6b6b6b;
+  --zemin: #fafafa;
+  --kart: #ffffff;
+  --cizgi: #ededed;
+  --cizgi-koyu: #e2e2e2;
+  --yazi: #141414;
+  --yazi-soft: #6b6f76;
 
-  /* Durum renkleri */
-  --durum-temiz: #1f9d55;
-  --durum-borclu: #d11a2a;
-  --durum-bekliyor: #c98a00;
+  --durum-temiz: #16a34a;
+  --durum-borclu: #e11d48;
+  --durum-bekliyor: #d97706;
 
-  /* Gölgeler (premium derinlik) */
-  --golge-yumusak: 0 1px 3px rgba(0, 0, 0, 0.08), 0 6px 18px rgba(0, 0, 0, 0.06);
-  --golge-kart: 0 2px 8px rgba(0, 0, 0, 0.06), 0 12px 30px rgba(0, 0, 0, 0.07);
-  --golge-sari: 0 6px 18px rgba(244, 223, 22, 0.35);
+  /* İnce, katmanlı gölgeler */
+  --golge-1: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --golge-2: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --golge-3: 0 4px 12px rgba(16, 24, 40, 0.06), 0 2px 4px rgba(16, 24, 40, 0.04);
+  --golge-4: 0 12px 28px rgba(16, 24, 40, 0.10), 0 4px 10px rgba(16, 24, 40, 0.05);
+  --golge-sari: 0 8px 20px rgba(244, 223, 22, 0.45);
 
-  --kenar: 14px;
+  --r-sm: 10px;
+  --r: 14px;
+  --r-lg: 18px;
 
-  font-family: 'Inter', Arial, Helvetica, system-ui, sans-serif;
-  color: var(--basak-siyah);
-  background-color: var(--gri-zemin);
+  /* Geriye dönük takma adlar (eski bileşen referansları kırılmasın) */
+  --gri-zemin: var(--zemin);
+  --gri-cizgi: var(--cizgi);
+  --gri-yazi: var(--yazi-soft);
+  --basak-beyaz: #ffffff;
+  --golge-kart: var(--golge-3);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  color: var(--yazi);
+  background-color: var(--zemin);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -41,7 +50,6 @@
 * {
   box-sizing: border-box;
 }
-
 html,
 body,
 #root {
@@ -49,73 +57,72 @@ body,
   padding: 0;
   min-height: 100vh;
 }
-
-/* İnce arkaplan dokusu (premium his, sade) */
 body {
   min-height: 100vh;
-  background-image: radial-gradient(circle at 50% -10%, rgba(244, 223, 22, 0.1), transparent 45%);
-  background-attachment: fixed;
+  background-color: var(--zemin);
 }
 
 h1,
 h2,
 h3,
-strong,
 .font-baslik {
   font-family: 'Poppins', 'Inter', sans-serif;
-  letter-spacing: 0.2px;
+  letter-spacing: -0.2px;
 }
 
 button {
   font-family: inherit;
   cursor: pointer;
 }
-
 input,
 select,
 textarea {
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 /* --- Marka yardımcı sınıfları --- */
 
-/* Başlık / salt-okunur: siyah zemin + sarı yazı */
+/* Başlık / salt-okunur: siyah zemin + sarı yazı (lüks vurgu) */
 .basak-baslik {
   background-color: var(--basak-siyah);
   color: var(--basak-sari);
 }
 
-/* Düzenlenebilir alan: sarı zemin + siyah yazı */
+/* Düzenlenebilir alan */
 .basak-alan {
-  background-color: #fffdf2;
-  color: var(--basak-siyah);
-  border: 1.5px solid #cfcfcf;
-  border-radius: 8px;
+  background-color: #fff;
+  color: var(--yazi);
+  border: 1.5px solid var(--cizgi-koyu);
+  border-radius: var(--r-sm);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .basak-alan:focus {
   outline: none;
   border-color: var(--basak-sari);
   box-shadow: 0 0 0 3px rgba(244, 223, 22, 0.35);
-  background-color: var(--basak-sari);
 }
 
-/* Birincil buton: sarı zemin + siyah yazı, premium */
+/* Birincil buton (CTA): sarı + siyah */
 .basak-btn {
-  background: linear-gradient(180deg, #f7e63a 0%, var(--basak-sari) 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: var(--basak-sari);
   color: var(--basak-siyah);
   border: 1.5px solid var(--basak-siyah);
-  border-radius: 10px;
+  border-radius: var(--r-sm);
   padding: 0.6rem 1rem;
   font-weight: 700;
-  letter-spacing: 0.2px;
-  box-shadow: var(--golge-yumusak);
-  transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+  letter-spacing: 0.1px;
+  box-shadow: var(--golge-2);
+  transition: transform 0.14s ease, box-shadow 0.18s ease, opacity 0.15s ease, background 0.15s ease;
 }
 .basak-btn:hover {
   transform: translateY(-1px);
   box-shadow: var(--golge-sari);
+  background: var(--basak-sari-koyu);
 }
 .basak-btn:active {
   transform: translateY(0);
@@ -127,38 +134,82 @@ textarea {
   transform: none;
 }
 
+/* İkincil buton (sade, çerçeveli) */
+.basak-btn-sade {
+  background: #fff;
+  color: var(--yazi);
+  border: 1.5px solid var(--cizgi-koyu);
+  box-shadow: var(--golge-1);
+}
+.basak-btn-sade:hover {
+  background: #fafafa;
+  border-color: #d0d0d0;
+}
+
 /* Premium kart */
 .basak-kart {
-  background: var(--basak-beyaz);
-  border: 1px solid var(--gri-cizgi);
-  border-radius: var(--kenar);
-  box-shadow: var(--golge-kart);
+  background: var(--kart);
+  border: 1px solid var(--cizgi);
+  border-radius: var(--r);
+  box-shadow: var(--golge-3);
+}
+/* Hover'da hafif yükselme (lift) */
+.kart-lift {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.kart-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--golge-4);
+}
+
+/* İkon çipi (sarı arka plan + siyah ikon) */
+.ikon-cip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--basak-sari);
+  color: var(--basak-siyah);
+  flex: none;
+}
+.ikon-cip-soft {
+  background: #fff7c2;
 }
 
 /* İnce, marka uyumlu kaydırma çubuğu */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--basak-sari) transparent;
+  scrollbar-color: #d9d9d9 transparent;
 }
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 *::-webkit-scrollbar-thumb {
-  background: var(--basak-sari);
+  background: #dcdcdc;
   border-radius: 8px;
-  border: 2px solid var(--gri-zemin);
+  border: 2px solid var(--zemin);
 }
-*::-webkit-scrollbar-track {
-  background: transparent;
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--basak-sari);
 }
 
-/* Tablo satır vurgusu */
+/* Tablo satır hover */
+.basak-satir-hover {
+  transition: background 0.12s ease;
+}
 .basak-satir-hover:hover {
   background: #fcf7d6;
 }
 
 /* Özet panosu responsive ızgaraları */
+.ozet-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+}
 .ozet-buyuk {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -166,11 +217,11 @@ textarea {
 }
 .ozet-iki-kolon {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1rem;
 }
 
-/* Firma Cari: dar ekranda (telefon) tek kolona in */
+/* Firma Cari: telefonda tek kolon */
 @media (max-width: 760px) {
   .basak-cari-izgara {
     grid-template-columns: 1fr !important;

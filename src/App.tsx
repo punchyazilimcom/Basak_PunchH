@@ -8,6 +8,7 @@
 // genişletilebilir.
 // ---------------------------------------------------------------------------
 import { useState, useEffect } from 'react';
+import { LayoutDashboard, Building2, LogOut } from 'lucide-react';
 import { useAuth } from './hooks/useAuth';
 import { DonemProvider } from './hooks/useDonem';
 import { otomatikYedek } from './lib/yedek';
@@ -42,29 +43,21 @@ function UstBar({ sayfa, setSayfa }: { sayfa: Sayfa; setSayfa: (s: Sayfa) => voi
 
       {/* Sayfa navigasyonu */}
       <nav style={{ display: 'flex', gap: 8 }}>
-        <button
-          className="basak-btn"
-          style={navBtn(sayfa === 'ozet')}
-          onClick={() => setSayfa('ozet')}
-        >
-          Özet Panosu
+        <button className="basak-btn" style={navBtn(sayfa === 'ozet')} onClick={() => setSayfa('ozet')}>
+          <LayoutDashboard size={16} /> Özet Panosu
         </button>
-        <button
-          className="basak-btn"
-          style={navBtn(sayfa === 'cari')}
-          onClick={() => setSayfa('cari')}
-        >
-          Firmalar / Cari
+        <button className="basak-btn" style={navBtn(sayfa === 'cari')} onClick={() => setSayfa('cari')}>
+          <Building2 size={16} /> Firmalar / Cari
         </button>
       </nav>
 
       <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <small>
+        <small style={{ opacity: 0.85 }}>
           {oturum?.rol}
           {oturum?.sube ? ` · ${oturum.sube}` : ''}
         </small>
-        <button className="basak-btn" style={{ padding: '0.3rem 0.7rem' }} onClick={cikisYap}>
-          Çıkış
+        <button className="basak-btn" style={{ padding: '0.35rem 0.7rem' }} onClick={cikisYap}>
+          <LogOut size={15} /> Çıkış
         </button>
       </span>
     </header>

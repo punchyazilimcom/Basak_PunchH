@@ -5,6 +5,7 @@
 //   - Yedek al / geri yükle: yalnızca Yönetici (sonraki adımda eklenecek).
 // ---------------------------------------------------------------------------
 import { useRef, useState } from 'react';
+import { FileSpreadsheet, FileText, DatabaseBackup, Upload, Wrench } from 'lucide-react';
 import { useAuth, subeyiGorebilir, yoneticiMi } from '@/hooks/useAuth';
 import { useDonem } from '@/hooks/useDonem';
 import { donemVerisiniGetir } from '@/lib/veri';
@@ -125,23 +126,25 @@ export default function Araclar() {
   }
 
   return (
-    <div style={kutu}>
-      <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>Araçlar:</span>
-      <button className="basak-btn" style={btn} onClick={excelAktar} disabled={!!mesgul || !seciliDonem}>
-        {mesgul === 'excel' ? 'Hazırlanıyor…' : '⬇ Excel’e Aktar'}
+    <div style={kutu} className="basak-kart">
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: '0.9rem' }}>
+        <Wrench size={16} /> Araçlar
+      </span>
+      <button className="basak-btn basak-btn-sade" style={btn} onClick={excelAktar} disabled={!!mesgul || !seciliDonem}>
+        <FileSpreadsheet size={16} /> {mesgul === 'excel' ? 'Hazırlanıyor…' : 'Excel’e Aktar'}
       </button>
-      <button className="basak-btn" style={btn} onClick={pdfAktar} disabled={!!mesgul || !seciliDonem}>
-        {mesgul === 'pdf' ? 'Hazırlanıyor…' : '⬇ PDF İndir'}
+      <button className="basak-btn basak-btn-sade" style={btn} onClick={pdfAktar} disabled={!!mesgul || !seciliDonem}>
+        <FileText size={16} /> {mesgul === 'pdf' ? 'Hazırlanıyor…' : 'PDF İndir'}
       </button>
 
       {yoneticiMi(oturum) && (
         <>
           <span style={ayrac} />
-          <button className="basak-btn" style={btn} onClick={yedekAl} disabled={!!mesgul}>
-            {mesgul === 'yedek' ? 'Alınıyor…' : '🗄 Şimdi Yedek Al'}
+          <button className="basak-btn basak-btn-sade" style={btn} onClick={yedekAl} disabled={!!mesgul}>
+            <DatabaseBackup size={16} /> {mesgul === 'yedek' ? 'Alınıyor…' : 'Şimdi Yedek Al'}
           </button>
-          <button className="basak-btn" style={btn} onClick={geriYukleSec} disabled={!!mesgul}>
-            {mesgul === 'geriyukle' ? 'Yükleniyor…' : '↺ Yedekten Geri Yükle'}
+          <button className="basak-btn basak-btn-sade" style={btn} onClick={geriYukleSec} disabled={!!mesgul}>
+            <Upload size={16} /> {mesgul === 'geriyukle' ? 'Yükleniyor…' : 'Yedekten Geri Yükle'}
           </button>
           <input
             ref={dosyaRef}
@@ -162,7 +165,7 @@ export default function Araclar() {
 const ayrac: React.CSSProperties = {
   width: 1,
   alignSelf: 'stretch',
-  background: 'var(--gri-cizgi)',
+  background: 'var(--cizgi)',
   margin: '0 2px',
 };
 
@@ -171,9 +174,6 @@ const kutu: React.CSSProperties = {
   alignItems: 'center',
   gap: 10,
   flexWrap: 'wrap',
-  padding: '0.6rem 0.9rem',
-  border: '2px solid var(--basak-siyah)',
-  borderRadius: 10,
-  background: 'var(--basak-beyaz)',
+  padding: '0.7rem 1rem',
 };
-const btn: React.CSSProperties = { padding: '0.4rem 0.8rem', fontSize: '0.85rem' };
+const btn: React.CSSProperties = { padding: '0.45rem 0.85rem', fontSize: '0.85rem' };

@@ -7,6 +7,7 @@
 //   En alt: KALAN BORÇ = Devir + ΣFatura − ΣÖdenen (otomatik).
 // ---------------------------------------------------------------------------
 import { useEffect, useState } from 'react';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 import type { Firma, Hareket } from '@/types';
 import { hareketleriDinle, devirDinle, devirAyarla, hareketSil } from '@/lib/veri';
 import { kalanBorc, toplamFatura, toplamOdenen, tlBicimle } from '@/lib/hesaplama';
@@ -73,13 +74,13 @@ export default function CariKart({ firma, donemId, kilitli }: Props) {
           {yazabilir && (
             <button
               className="basak-btn"
-              style={{ padding: '0.4rem 0.8rem' }}
+              style={{ padding: '0.45rem 0.85rem' }}
               onClick={() => {
                 setDuzenlenen(undefined);
                 setFormAcik(true);
               }}
             >
-              + Hareket
+              <Plus size={16} /> Hareket
             </button>
           )}
         </div>
@@ -161,17 +162,18 @@ export default function CariKart({ firma, donemId, kilitli }: Props) {
                 {yazabilir && (
                   <td style={{ ...td, whiteSpace: 'nowrap' }}>
                     <button
-                      className="basak-btn"
+                      className="basak-btn basak-btn-sade"
                       style={mini}
+                      aria-label="Düzenle"
                       onClick={() => {
                         setDuzenlenen(h);
                         setFormAcik(true);
                       }}
                     >
-                      ✎
+                      <Pencil size={14} />
                     </button>{' '}
-                    <button className="basak-btn" style={mini} onClick={() => hareketiSil(h)}>
-                      🗑
+                    <button className="basak-btn basak-btn-sade" style={mini} aria-label="Sil" onClick={() => hareketiSil(h)}>
+                      <Trash2 size={14} />
                     </button>
                   </td>
                 )}
