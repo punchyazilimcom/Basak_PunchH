@@ -1,0 +1,91 @@
+rules_version = '2';
+
+// ===========================================================================
+// Başak Ödeme & Cari Takip — Firestore Güvenlik Kuralları (Faz 1)
+//
+// ÖNEMLİ MİMARİ NOT:
+// Faz 1'de giriş, Firebase Auth ile DEĞİL, uygulama içi PIN mantığı ile yapılır
+// (şartname Bölüm 3). Bu nedenle bu fazda Firestore tarafında "request.auth"
+// üzerinden rol bilgisi henüz yoktur. Aşağıdaki kurallar Faz 1 için makul bir
+// taban koruma sağlar ve rol tabanlı kısıtların NEREYE ekleneceğini işaretler.
+//
+// SONRAKİ FAZ (önerilen sertleştirme):
+//   - PIN doğrulaması Cloud Functions'a taşınır; başarılı PIN, Firebase Auth
+//     "custom token" (custom claims: rol, sube) üretir.
+//   - O zaman aşağıdaki yardımcılar (rol(), yonetici(), subesi()) gerçek
+//     request.auth.token alanlarından beslenir ve yorum satırları açılır.
+//
+// Bu dosya `firebase deploy --only firestore:rules` ile yayınlanır.
+// ===========================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Yardımcılar (Faz 2'de Auth custom claims ile etkinleşecek) ---------
+    // function rol()       { return request.auth.token.rol; }
+    // function yonetici()  { return rol() == 'Yonetici'; }
+    // function muhasebe()  { return rol() == 'Muhasebe'; }
+    // function girisYetkisi() { return yonetici() || muhasebe(); }
+    // function subesi(sube) { return rol() != 'Sube' || request.auth.token.sube == sube; }
+
+    function gecerliFirma() {
+      return request.resource.data.ad is string
+          && request.resource.data.ad.size() > 0
+          && request.resource.data.bolum is string;
+    }
+
+    function gecerliHareket() {
+      return request.resource.data.firmaId is string
+          && request.resource.data.donemId is string
+          && request.resource.data.faturaTutari is number
+          && request.resource.data.faturaTutari >= 0
+          && request.resource.data.odenenTutar is number
+          && request.resource.data.odenenTutar >= 0;
+    }
+
+    // --- PIN kayıtları -------------------------------------------------------
+    // Hash + salt saklanır (düz PIN değil). İstemci yalnızca doğrulama için
+    // okur ve ilk kurulumda/yeni PIN eklerken yazar.
+    // SERTLEŞTİRME (Faz 2): okuma kapatılıp doğrulama Cloud Functions'a taşınır;
+    //   allow read: if false;  allow write: if yonetici();
+    match /pinKayitlari/{kayitId} {
+      allow read: if true;
+      allow create: if request.resource.data.hashHex is string
+                    && request.resource.data.saltHex is string
+                    && request.resource.data.rol is string;
+      allow update, delete: if true; // Faz 2: if yonetici();
+    }
+
+    // --- Firmalar ------------------------------------------------------------
+    match /firmalar/{firmaId} {
+      allow read: if true;            // Faz 2: if request.auth != null; (+ subesi filtresi)
+      allow create, update: if gecerliFirma();  // Faz 2: && girisYetkisi()
+      allow delete: if true;          // Faz 2: if yonetici();
+    }
+
+    // --- Hareketler ----------------------------------------------------------
+    match /hareketler/{hareketId} {
+      allow read: if true;            // Faz 2: if request.auth != null;
+      allow create, update: if gecerliHareket();  // Faz 2: && girisYetkisi()
+      allow delete: if true;          // Faz 2: if girisYetkisi();
+    }
+
+    // --- Devirler ------------------------------------------------------------
+    match /devirler/{devirId} {
+      allow read: if true;            // Faz 2: if request.auth != null;
+      allow write: if request.resource.data.tutar is number; // Faz 2: && girisYetkisi()
+    }
+
+    // --- Dönemler ------------------------------------------------------------
+    // Dönem açma/kilitleme Faz 3'te yalnızca Yönetici yetkisinde olacak.
+    match /donemler/{donemId} {
+      allow read: if true;            // Faz 2: if request.auth != null;
+      allow write: if request.resource.data.ad is string; // Faz 3: && yonetici()
+    }
+
+    // --- Diğer her şey kapalı ------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
