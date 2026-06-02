@@ -17,14 +17,19 @@ import Modal from '@/components/Modal';
 import FirmaFormu from '@/components/FirmaFormu';
 import CariKart from '@/components/CariKart';
 
-export default function FirmaCari() {
+interface Props {
+  /** Özet panosundan gelindiğinde önce seçili olacak firma. */
+  baslangicFirmaId?: string | null;
+}
+
+export default function FirmaCari({ baslangicFirmaId }: Props) {
   const { oturum } = useAuth();
-  const { donem, yukleniyor, hata } = useDonem();
+  const { seciliDonem, duzenlenebilir, yukleniyor, hata } = useDonem();
 
   const [firmalar, setFirmalar] = useState<Firma[]>([]);
   const [arama, setArama] = useState('');
   const [bolumFiltre, setBolumFiltre] = useState<Bolum | 'Tümü'>('Tümü');
-  const [seciliId, setSeciliId] = useState<string | null>(null);
+  const [seciliId, setSeciliId] = useState<string | null>(baslangicFirmaId ?? null);
 
   const [formAcik, setFormAcik] = useState(false);
   const [formVarsayilanBolum, setFormVarsayilanBolum] = useState<Bolum | undefined>();
@@ -34,6 +39,11 @@ export default function FirmaCari() {
     const off = firmalariDinle(setFirmalar);
     return off;
   }, []);
+
+  // Özet'ten yeni bir firma seçilerek gelinirse onu seç
+  useEffect(() => {
+    if (baslangicFirmaId) setSeciliId(baslangicFirmaId);
+  }, [baslangicFirmaId]);
 
   // Rol + arama + bölüm filtresi
   const gorunenFirmalar = useMemo(() => {
@@ -139,14 +149,15 @@ export default function FirmaCari() {
       <section style={s.sag}>
         {yukleniyor && <p>Dönem yükleniyor…</p>}
         {hata && <p style={{ color: 'var(--durum-borclu)', fontWeight: 700 }}>{hata}</p>}
-        {!yukleniyor && donem && (
+        {!yukleniyor && seciliDonem && (
           <>
-            <div style={{ fontSize: '0.85rem', color: 'var(--gri-yazi)', marginBottom: 10 }}>
-              Aktif Dönem: <strong>{donem.ad}</strong>
-              {donem.kilitliMi ? ' (kilitli — arşiv)' : ''}
-            </div>
+            {!duzenlenebilir && (
+              <div style={{ fontSize: '0.85rem', color: 'var(--durum-borclu)', fontWeight: 700, marginBottom: 10 }}>
+                Bu dönem kilitli — salt görüntüleme (düzenleme kapalı).
+              </div>
+            )}
             {secili ? (
-              <CariKart firma={secili} donemId={donem.id} kilitli={donem.kilitliMi} />
+              <CariKart firma={secili} donemId={seciliDonem.id} kilitli={!duzenlenebilir} />
             ) : (
               <div style={s.bosDurum}>
                 <p>Soldan bir firma seçin ya da yeni firma ekleyin.</p>

@@ -2,16 +2,22 @@
 // Uygulama kabuğu (App shell) ve oturum koruması.
 //
 //   - Oturum yoksa  -> PIN giriş ekranı.
-//   - Oturum varsa  -> Firma Cari ekranı (Faz 1 çekirdek modülü).
+//   - Oturum varsa  -> Özet Panosu (varsayılan) + Firma Cari + dönem yönetimi.
 //
-// Faz 2'de özet panosu, Faz 3'te dönem yönetimi üst menüye eklenecek.
+// Sayfa geçişi basit durum (state) ile yapılır; react-router ileride gerekirse
+// genişletilebilir.
 // ---------------------------------------------------------------------------
+import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { DonemProvider } from './hooks/useDonem';
 import PinGiris from './pages/PinGiris';
 import FirmaCari from './pages/FirmaCari';
+import Ozet from './pages/Ozet';
+import DonemBar from './components/DonemBar';
 
-function UstBar() {
+type Sayfa = 'ozet' | 'cari';
+
+function UstBar({ sayfa, setSayfa }: { sayfa: Sayfa; setSayfa: (s: Sayfa) => void }) {
   const { oturum, cikisYap } = useAuth();
   return (
     <header
@@ -20,16 +26,37 @@ function UstBar() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap: 12,
+        flexWrap: 'wrap',
         padding: '0.6rem 1rem',
         position: 'sticky',
         top: 0,
-        zIndex: 10,
+        zIndex: 20,
       }}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <img src="/logo.svg" alt="Başak" width={32} height={32} style={{ borderRadius: 8 }} />
         <strong>BAŞAK · Ödeme &amp; Cari Takip</strong>
       </span>
+
+      {/* Sayfa navigasyonu */}
+      <nav style={{ display: 'flex', gap: 8 }}>
+        <button
+          className="basak-btn"
+          style={navBtn(sayfa === 'ozet')}
+          onClick={() => setSayfa('ozet')}
+        >
+          Özet Panosu
+        </button>
+        <button
+          className="basak-btn"
+          style={navBtn(sayfa === 'cari')}
+          onClick={() => setSayfa('cari')}
+        >
+          Firmalar / Cari
+        </button>
+      </nav>
+
       <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <small>
           {oturum?.rol}
@@ -43,17 +70,45 @@ function UstBar() {
   );
 }
 
-export default function App() {
-  const { oturum } = useAuth();
+function navBtn(aktif: boolean): React.CSSProperties {
+  return {
+    padding: '0.3rem 0.8rem',
+    fontSize: '0.85rem',
+    background: aktif ? 'var(--basak-sari)' : 'transparent',
+    color: aktif ? 'var(--basak-siyah)' : 'var(--basak-sari)',
+    borderColor: 'var(--basak-sari)',
+  };
+}
 
-  if (!oturum) return <PinGiris />;
+function IcerikKabugu() {
+  const [sayfa, setSayfa] = useState<Sayfa>('ozet');
+  const [seciliFirmaId, setSeciliFirmaId] = useState<string | null>(null);
+
+  // Özet'te bir firmaya tıklanınca cari ekranına geç ve o firmayı seç
+  function firmayaGit(firmaId: string) {
+    setSeciliFirmaId(firmaId);
+    setSayfa('cari');
+  }
 
   return (
+    <div style={{ minHeight: '100vh' }}>
+      <UstBar sayfa={sayfa} setSayfa={setSayfa} />
+      <DonemBar />
+      {sayfa === 'ozet' ? (
+        <Ozet onFirmaSec={firmayaGit} />
+      ) : (
+        <FirmaCari baslangicFirmaId={seciliFirmaId} />
+      )}
+    </div>
+  );
+}
+
+export default function App() {
+  const { oturum } = useAuth();
+  if (!oturum) return <PinGiris />;
+  return (
     <DonemProvider>
-      <div style={{ minHeight: '100vh' }}>
-        <UstBar />
-        <FirmaCari />
-      </div>
+      <IcerikKabugu />
     </DonemProvider>
   );
 }
