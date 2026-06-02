@@ -1,0 +1,91 @@
+/* ---------------------------------------------------------------------------
+   Başak marka temel stilleri ve CSS değişkenleri.
+   Renk kuralı (şartname Bölüm 8):
+     - Ana sarı:  #F4DF16  (Başak Sarısı)
+     - Siyah:     #000000
+     - Düzenlenebilir alanlar  -> sarı zemin / siyah yazı
+     - Başlık / salt-okunur     -> siyah zemin / sarı yazı
+   Stil: sade, modern, responsive; parlak/yapay efekt yok.
+--------------------------------------------------------------------------- */
+:root {
+  --basak-sari: #f4df16;
+  --basak-siyah: #000000;
+  --basak-beyaz: #ffffff;
+
+  /* Yardımcı tonlar (gri çizgiler, hafif zeminler) */
+  --gri-cizgi: #d9d9d9;
+  --gri-zemin: #f5f5f5;
+  --gri-yazi: #555555;
+
+  /* Durum renkleri (özet panosunda kullanılacak — Faz 2) */
+  --durum-temiz: #1f9d55; /* yeşil */
+  --durum-borclu: #d11a2a; /* kırmızı */
+
+  font-family: Arial, Helvetica, system-ui, sans-serif;
+  color: var(--basak-siyah);
+  background-color: var(--gri-zemin);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* --- Yeniden kullanılabilir marka yardımcı sınıfları --- */
+
+/* Başlık / salt-okunur: siyah zemin + sarı yazı */
+.basak-baslik {
+  background-color: var(--basak-siyah);
+  color: var(--basak-sari);
+}
+
+/* Düzenlenebilir alan: sarı zemin + siyah yazı */
+.basak-alan {
+  background-color: var(--basak-sari);
+  color: var(--basak-siyah);
+  border: 1px solid var(--basak-siyah);
+}
+
+/* Birincil buton: sarı zemin + siyah yazı */
+.basak-btn {
+  background-color: var(--basak-sari);
+  color: var(--basak-siyah);
+  border: 2px solid var(--basak-siyah);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+.basak-btn:hover {
+  opacity: 0.85;
+}
+.basak-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

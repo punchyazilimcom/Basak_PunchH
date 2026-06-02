@@ -1,0 +1,33 @@
+# Bağımlılıklar
+node_modules
+dist
+dist-ssr
+*.local
+
+# Ortam değişkenleri (Firebase anahtarları burada — repoya GİRMEZ)
+.env
+.env.*
+!.env.example
+
+# Editör / sistem
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Loglar
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sonraki fazlar (Tauri / Capacitor build çıktıları)
+src-tauri/target
+android
+ios
