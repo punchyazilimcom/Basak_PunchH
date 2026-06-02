@@ -25,6 +25,8 @@ export default defineConfig({
     // Tauri sabit portu bekler; web'de de sorun çıkarmaz
     strictPort: true,
     host: true,
+    // Tünel (cloudflared/localtunnel) üzerinden telefondan erişime izin ver
+    allowedHosts: true,
   },
   build: {
     // Tauri webview'i (WebView2 / WKWebView) modern; küçük çıktı için hedefi yükselt

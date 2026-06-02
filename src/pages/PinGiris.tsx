@@ -97,7 +97,7 @@ export default function PinGiris() {
     <div style={s.kapsayici}>
       <div style={s.kart}>
         <div className="basak-baslik" style={s.baslik}>
-          <img src="/logo.svg" alt="Başak" width={48} height={48} style={{ borderRadius: 10 }} />
+          <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Başak" width={48} height={48} style={{ borderRadius: 10 }} />
           <h1 style={s.baslikYazi}>BAŞAK KIR PİDESİ</h1>
           <p style={s.altBaslik}>Ödeme &amp; Cari Takip</p>
         </div>

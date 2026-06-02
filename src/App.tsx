@@ -36,7 +36,7 @@ function UstBar({ sayfa, setSayfa }: { sayfa: Sayfa; setSayfa: (s: Sayfa) => voi
       }}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <img src="/logo.svg" alt="Başak" width={32} height={32} style={{ borderRadius: 8 }} />
+        <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Başak" width={32} height={32} style={{ borderRadius: 8 }} />
         <strong>BAŞAK · Ödeme &amp; Cari Takip</strong>
       </span>
 
