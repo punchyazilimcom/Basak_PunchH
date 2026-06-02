@@ -78,19 +78,56 @@ Storage etkin değilse uygulama çalışmaya devam eder; otomatik yedek sessizce
 atlanır, manuel JSON yedek her zaman çalışır. Zamanlanmış Cloud Function örneği
 `functions/` klasöründedir (opsiyonel, Blaze planı gerekir).
 
+**Faz 4 — Masaüstü (.exe) — Tauri**
+- [x] Tauri v2 entegrasyonu (`src-tauri/`), web çekirdeğini sarmalar
+- [x] Başak markalı ikon seti (`.ico` / `.icns` / png), pencere ayarları
+- [x] NSIS kurulum yapılandırması + kod imzalama yer tutucuları
+
+### Masaüstü uygulamayı çalıştırma / paketleme
+
+Geliştirme (uygulamayı pencere içinde açar):
+
+```bash
+npm run tauri:dev
+```
+
+Üretim derlemesi (kurulabilir paket üretir):
+
+```bash
+npm run tauri:build
+```
+
+- **Windows .exe için derleme Windows'ta yapılır** (Rust + Visual Studio Build
+  Tools "Desktop development with C++" + WebView2). Çıktı:
+  `src-tauri/target/release/bundle/nsis/*.exe` (kurulum) ve `.../msi/*.msi`.
+- Linux/macOS'ta sırasıyla AppImage/deb ve .dmg üretilir (aynı kod tabanı).
+- Ön-koşullar: <https://v2.tauri.app/start/prerequisites/>
+
+### Kod imzalama (Windows SmartScreen uyarısını önler)
+
+`src-tauri/tauri.conf.json > bundle.windows`:
+
+- `certificateThumbprint`: imzalama sertifikanızın parmak izi (Authenticode).
+- `timestampUrl`: zaman damgası sunucusu (varsayılan DigiCert ayarlı).
+
+Sertifika kurulu Windows makinesinde parmak izini girip `npm run tauri:build`
+çalıştırmak `.exe`/`.msi` dosyalarını imzalar. İmza olmadan da çalışır; yalnızca
+ilk açılışta SmartScreen uyarısı görünebilir.
+
 ## Sonraki Fazlar (henüz yapılmadı)
 
-5. Tauri ile .exe paketleme
 6. Capacitor ile Android/iOS
 
 ## Komutlar
 
 | Komut | Açıklama |
 |-------|----------|
-| `npm run dev` | Geliştirme sunucusu |
-| `npm run build` | Üretim derlemesi |
+| `npm run dev` | Geliştirme sunucusu (web) |
+| `npm run build` | Üretim derlemesi (web) |
 | `npm run typecheck` | Tip kontrolü |
 | `npm run preview` | Derlemeyi önizle |
+| `npm run tauri:dev` | Masaüstü uygulamayı geliştirme modunda aç |
+| `npm run tauri:build` | Masaüstü kurulum paketi (.exe/.msi/AppImage) üret |
 
 ## Marka
 
