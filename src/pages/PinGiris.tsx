@@ -97,9 +97,12 @@ export default function PinGiris() {
     <div style={s.kapsayici}>
       <div style={s.kart}>
         <div className="basak-baslik" style={s.baslik}>
-          <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Başak" width={48} height={48} style={{ borderRadius: 10 }} />
-          <h1 style={s.baslikYazi}>BAŞAK KIR PİDESİ</h1>
-          <p style={s.altBaslik}>Ödeme &amp; Cari Takip</p>
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="Başak Kır Pidesi"
+            style={{ width: 188, maxWidth: '70%', display: 'block', margin: '0 auto' }}
+          />
+          <p style={s.altBaslik}>ÖDEME &amp; CARİ TAKİP</p>
         </div>
 
         <div style={s.govde}>
@@ -171,16 +174,22 @@ const s: Record<string, React.CSSProperties> = {
   kapsayici: { minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '1rem' },
   kart: {
     width: '100%',
-    maxWidth: 360,
-    border: '2px solid var(--basak-siyah)',
-    borderRadius: 14,
+    maxWidth: 380,
+    border: '1px solid rgba(0,0,0,0.15)',
+    borderRadius: 18,
     overflow: 'hidden',
     background: 'var(--basak-beyaz)',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.35)',
   },
-  baslik: { padding: '1.25rem', textAlign: 'center' },
-  baslikYazi: { margin: '0.5rem 0 0', fontSize: '1.2rem' },
-  altBaslik: { margin: '0.15rem 0 0', fontSize: '0.85rem', opacity: 0.9 },
-  govde: { padding: '1.25rem' },
+  baslik: { padding: '1.6rem 1.25rem 1.4rem', textAlign: 'center' },
+  altBaslik: {
+    margin: '0.6rem 0 0',
+    fontSize: '0.72rem',
+    letterSpacing: '3px',
+    fontWeight: 600,
+    opacity: 0.85,
+  },
+  govde: { padding: '1.4rem' },
   uyari: {
     background: '#fff4d6',
     border: '1px solid var(--basak-siyah)',

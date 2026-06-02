@@ -1,30 +1,39 @@
 /* ---------------------------------------------------------------------------
-   Başak marka temel stilleri ve CSS değişkenleri.
+   Başak — Premium tema (siyah / sarı / beyaz).
    Renk kuralı (şartname Bölüm 8):
      - Ana sarı:  #F4DF16  (Başak Sarısı)
      - Siyah:     #000000
      - Düzenlenebilir alanlar  -> sarı zemin / siyah yazı
      - Başlık / salt-okunur     -> siyah zemin / sarı yazı
-   Stil: sade, modern, responsive; parlak/yapay efekt yok.
+   Font: Poppins (başlık) + Inter (gövde). Sade, modern, premium.
 --------------------------------------------------------------------------- */
 :root {
   --basak-sari: #f4df16;
-  --basak-siyah: #000000;
+  --basak-sari-koyu: #d8c40a;
+  --basak-siyah: #0a0a0a;
+  --basak-siyah-saf: #000000;
   --basak-beyaz: #ffffff;
 
-  /* Yardımcı tonlar (gri çizgiler, hafif zeminler) */
-  --gri-cizgi: #d9d9d9;
-  --gri-zemin: #f5f5f5;
-  --gri-yazi: #555555;
+  /* Yardımcı tonlar */
+  --gri-cizgi: #e7e7e7;
+  --gri-zemin: #f3f3f1;
+  --gri-yazi: #6b6b6b;
 
-  /* Durum renkleri (özet panosunda kullanılacak — Faz 2) */
-  --durum-temiz: #1f9d55; /* yeşil */
-  --durum-borclu: #d11a2a; /* kırmızı */
+  /* Durum renkleri */
+  --durum-temiz: #1f9d55;
+  --durum-borclu: #d11a2a;
+  --durum-bekliyor: #c98a00;
 
-  font-family: Arial, Helvetica, system-ui, sans-serif;
+  /* Gölgeler (premium derinlik) */
+  --golge-yumusak: 0 1px 3px rgba(0, 0, 0, 0.08), 0 6px 18px rgba(0, 0, 0, 0.06);
+  --golge-kart: 0 2px 8px rgba(0, 0, 0, 0.06), 0 12px 30px rgba(0, 0, 0, 0.07);
+  --golge-sari: 0 6px 18px rgba(244, 223, 22, 0.35);
+
+  --kenar: 14px;
+
+  font-family: 'Inter', Arial, Helvetica, system-ui, sans-serif;
   color: var(--basak-siyah);
   background-color: var(--gri-zemin);
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -41,8 +50,20 @@ body,
   min-height: 100vh;
 }
 
+/* İnce arkaplan dokusu (premium his, sade) */
 body {
   min-height: 100vh;
+  background-image: radial-gradient(circle at 50% -10%, rgba(244, 223, 22, 0.1), transparent 45%);
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+strong,
+.font-baslik {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  letter-spacing: 0.2px;
 }
 
 button {
@@ -57,7 +78,7 @@ textarea {
   font-size: 1rem;
 }
 
-/* --- Yeniden kullanılabilir marka yardımcı sınıfları --- */
+/* --- Marka yardımcı sınıfları --- */
 
 /* Başlık / salt-okunur: siyah zemin + sarı yazı */
 .basak-baslik {
@@ -67,25 +88,95 @@ textarea {
 
 /* Düzenlenebilir alan: sarı zemin + siyah yazı */
 .basak-alan {
-  background-color: var(--basak-sari);
+  background-color: #fffdf2;
   color: var(--basak-siyah);
-  border: 1px solid var(--basak-siyah);
+  border: 1.5px solid #cfcfcf;
+  border-radius: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.basak-alan:focus {
+  outline: none;
+  border-color: var(--basak-sari);
+  box-shadow: 0 0 0 3px rgba(244, 223, 22, 0.35);
+  background-color: var(--basak-sari);
 }
 
-/* Birincil buton: sarı zemin + siyah yazı */
+/* Birincil buton: sarı zemin + siyah yazı, premium */
 .basak-btn {
-  background-color: var(--basak-sari);
+  background: linear-gradient(180deg, #f7e63a 0%, var(--basak-sari) 100%);
   color: var(--basak-siyah);
-  border: 2px solid var(--basak-siyah);
-  border-radius: 6px;
+  border: 1.5px solid var(--basak-siyah);
+  border-radius: 10px;
   padding: 0.6rem 1rem;
   font-weight: 700;
-  transition: opacity 0.15s ease;
+  letter-spacing: 0.2px;
+  box-shadow: var(--golge-yumusak);
+  transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease;
 }
 .basak-btn:hover {
-  opacity: 0.85;
+  transform: translateY(-1px);
+  box-shadow: var(--golge-sari);
+}
+.basak-btn:active {
+  transform: translateY(0);
 }
 .basak-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Premium kart */
+.basak-kart {
+  background: var(--basak-beyaz);
+  border: 1px solid var(--gri-cizgi);
+  border-radius: var(--kenar);
+  box-shadow: var(--golge-kart);
+}
+
+/* İnce, marka uyumlu kaydırma çubuğu */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--basak-sari) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--basak-sari);
+  border-radius: 8px;
+  border: 2px solid var(--gri-zemin);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Tablo satır vurgusu */
+.basak-satir-hover:hover {
+  background: #fcf7d6;
+}
+
+/* Özet panosu responsive ızgaraları */
+.ozet-buyuk {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.ozet-iki-kolon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Firma Cari: dar ekranda (telefon) tek kolona in */
+@media (max-width: 760px) {
+  .basak-cari-izgara {
+    grid-template-columns: 1fr !important;
+  }
+  .basak-cari-sol {
+    position: static !important;
+    max-height: none !important;
+  }
 }

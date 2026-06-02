@@ -68,9 +68,9 @@ export default function FirmaCari({ baslangicFirmaId }: Props) {
   }
 
   return (
-    <div style={s.izgara}>
+    <div className="basak-cari-izgara" style={s.izgara}>
       {/* SOL PANEL */}
-      <aside style={s.sol}>
+      <aside className="basak-cari-sol" style={s.sol}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
           {girisYetkisiVar(oturum) && (
             <>

@@ -35,9 +35,9 @@ function UstBar({ sayfa, setSayfa }: { sayfa: Sayfa; setSayfa: (s: Sayfa) => voi
         zIndex: 20,
       }}
     >
-      <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Başak" width={32} height={32} style={{ borderRadius: 8 }} />
-        <strong>BAŞAK · Ödeme &amp; Cari Takip</strong>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Başak Kır Pidesi" height={40} style={{ display: 'block' }} />
+        <strong style={{ fontSize: '1.02rem', letterSpacing: '0.3px' }}>Ödeme &amp; Cari Takip</strong>
       </span>
 
       {/* Sayfa navigasyonu */}

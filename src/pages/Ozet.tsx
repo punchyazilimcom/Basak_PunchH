@@ -201,19 +201,27 @@ function rozet(temiz: boolean): React.CSSProperties {
 }
 
 const k: Record<string, React.CSSProperties> = {
-  buyukSol: { padding: '1.25rem', borderRadius: 12, flex: 1, minWidth: 240 },
+  buyukSol: {
+    padding: '1.4rem 1.5rem',
+    borderRadius: 16,
+    flex: 1,
+    minWidth: 240,
+    background: 'linear-gradient(135deg, #141414 0%, #000 100%)',
+    boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
+  },
   buyukSag: {
-    padding: '1.25rem',
-    borderRadius: 12,
+    padding: '1.4rem 1.5rem',
+    borderRadius: 16,
     flex: 1,
     minWidth: 240,
     color: '#fff',
-    border: '2px solid var(--basak-siyah)',
+    boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
   },
   kutu: {
-    border: '2px solid var(--basak-siyah)',
-    borderRadius: 10,
+    border: '1px solid var(--gri-cizgi)',
+    borderRadius: 14,
     background: 'var(--basak-beyaz)',
+    boxShadow: 'var(--golge-kart)',
     overflow: 'hidden',
   },
   kutuBaslik: { padding: '0.6rem 0.9rem', fontWeight: 800, fontSize: '0.9rem' },
