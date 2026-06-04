@@ -21,6 +21,7 @@ import {
   BarChart3,
   TrendingUp,
   ListChecks,
+  CalendarClock,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -110,6 +111,32 @@ export default function Ozet({ onFirmaSec }: Props) {
   const genelToplam = toplamKalan(ozetler);
   const bekleyen = bekleyenGecikmisToplam(gHareketler);
   const odenen = odenenToplam(gHareketler);
+
+  // Firma kartları: Ödemeler / Taşeronlar / Hepsi filtresi
+  const [firmaFiltre, setFirmaFiltre] = useState<'hepsi' | 'odeme' | 'taseron'>('hepsi');
+  const kartlar = useMemo(
+    () =>
+      ozetler.filter((o) =>
+        firmaFiltre === 'hepsi'
+          ? true
+          : firmaFiltre === 'taseron'
+            ? o.firma.bolum === 'Taşeron'
+            : o.firma.bolum !== 'Taşeron',
+      ),
+    [ozetler, firmaFiltre],
+  );
+
+  // Her firmanın son ödeme tarihi (odenenTutar>0 olan en güncel hareket)
+  const sonOdeme = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const h of gHareketler) {
+      if ((h.odenenTutar || 0) > 0) {
+        const mevcut = m.get(h.firmaId);
+        if (!mevcut || h.tarih > mevcut) m.set(h.firmaId, h.tarih);
+      }
+    }
+    return m;
+  }, [gHareketler]);
 
   // Pasta: bölüm bazında (sıfır olmayan)
   const bolumVeri = useMemo(
@@ -288,51 +315,121 @@ export default function Ozet({ onFirmaSec }: Props) {
         </div>
       </div>
 
-      {/* Firma listesi */}
+      {/* Firma kartları (premium sarı kutular) + Ödemeler/Taşeronlar/Hepsi filtresi */}
       <div className="basak-kart" style={kutu}>
-        <Baslik ikon={<ListChecks size={16} />} metin={`Firma Kalan Borç Listesi (${ozetler.length})`} />
-        <div style={{ overflowX: 'auto' }}>
-          <table style={tablo}>
-            <thead>
-              <tr>
-                <th style={th}>Firma</th>
-                <th style={th}>Bölüm</th>
-                <th style={th}>Şube</th>
-                <th style={thSag}>Kalan Borç</th>
-                <th style={th}>Durum</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ozetler.length === 0 && (
-                <tr>
-                  <td style={{ ...td, color: 'var(--yazi-soft)' }} colSpan={5}>
-                    Bu dönemde firma/kayıt yok.
-                  </td>
-                </tr>
-              )}
-              {ozetler.map((o) => (
-                <tr
-                  key={o.firma.id}
-                  className="basak-satir-hover"
-                  onClick={() => onFirmaSec?.(o.firma.id)}
-                  style={{ borderTop: '1px solid var(--cizgi)', cursor: onFirmaSec ? 'pointer' : 'default' }}
-                >
-                  <td style={{ ...td, fontWeight: 700 }}>{o.firma.ad}</td>
-                  <td style={td}>{o.firma.bolum}</td>
-                  <td style={td}>{o.firma.sube || '—'}</td>
-                  <td style={{ ...tdSag, fontWeight: 800 }}>{tlBicimle(o.kalan)}</td>
-                  <td style={td}>
-                    <span style={rozet(o.temiz)}>{o.temiz ? 'TEMİZ' : 'BORÇLU'}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+            padding: '0.85rem 1rem',
+            borderBottom: '1px solid var(--cizgi)',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: '0.92rem' }}>
+            <ListChecks size={16} style={{ color: 'var(--yazi-soft)' }} /> Firmalar ({kartlar.length})
+          </span>
+          <div style={{ display: 'inline-flex', background: '#f0f0f0', borderRadius: 999, padding: 4, gap: 4 }}>
+            {([
+              ['hepsi', 'Hepsi'],
+              ['odeme', 'Ödemeler'],
+              ['taseron', 'Taşeronlar'],
+            ] as const).map(([k, l]) => (
+              <button key={k} onClick={() => setFirmaFiltre(k)} style={segBtn(firmaFiltre === k)}>
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {kartlar.length === 0 ? (
+          <p style={bos}>Bu grupta firma yok.</p>
+        ) : (
+          <div className="firma-kart-izgara">
+            {kartlar.map((o) => (
+              <motion.button
+                key={o.firma.id}
+                onClick={() => onFirmaSec?.(o.firma.id)}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                style={firmaKart(o.temiz)}
+                title={`${o.firma.ad} — hareketleri gör`}
+              >
+                <span style={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}>{o.firma.ad}</span>
+                <span className="font-baslik" style={{ fontWeight: 800, fontSize: '1.32rem', marginTop: 4 }}>
+                  {tlBicimle(o.kalan)}
+                </span>
+                <span style={{ fontSize: '0.72rem', marginTop: 10, opacity: 0.72, display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <CalendarClock size={13} /> Son ödeme: {tarihGoster(sonOdeme.get(o.firma.id))}
+                </span>
+                {o.temiz && <span style={temizRozet}>TEMİZ</span>}
+              </motion.button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+/** "YYYY-MM-DD" → "DD.MM.YYYY"; yoksa "—". */
+function tarihGoster(iso?: string): string {
+  if (!iso) return '—';
+  const [y, a, g] = iso.split('-');
+  return g && a && y ? `${g}.${a}.${y}` : iso;
+}
+
+function segBtn(aktif: boolean): React.CSSProperties {
+  return {
+    border: 'none',
+    cursor: 'pointer',
+    padding: '0.4rem 0.85rem',
+    borderRadius: 999,
+    fontSize: '0.82rem',
+    fontWeight: 700,
+    background: aktif ? 'var(--basak-siyah)' : 'transparent',
+    color: aktif ? 'var(--basak-sari)' : 'var(--yazi-soft)',
+    transition: 'background 0.15s ease, color 0.15s ease',
+  };
+}
+
+/** Premium sarı firma kartı. */
+function firmaKart(temiz: boolean): React.CSSProperties {
+  return {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    textAlign: 'left',
+    cursor: 'pointer',
+    background: temiz
+      ? 'linear-gradient(160deg, #fef9c8 0%, #fdf0a0 100%)'
+      : 'linear-gradient(160deg, #f9e74a 0%, var(--basak-sari) 100%)',
+    color: 'var(--basak-siyah)',
+    border: '1px solid rgba(0,0,0,0.18)',
+    borderRadius: 16,
+    padding: '0.95rem 1rem',
+    minHeight: 118,
+    boxShadow: 'var(--golge-2)',
+    font: 'inherit',
+  };
+}
+
+const temizRozet: React.CSSProperties = {
+  position: 'absolute',
+  top: 10,
+  right: 10,
+  background: 'rgba(0,0,0,0.85)',
+  color: 'var(--basak-sari)',
+  fontSize: '0.6rem',
+  fontWeight: 800,
+  letterSpacing: '0.5px',
+  padding: '0.12rem 0.4rem',
+  borderRadius: 999,
+};
 
 /** KPI kartı (count-up + giriş + hover lift). vurgu=true → siyah kart + altın. */
 function KpiKart({
@@ -410,18 +507,6 @@ function Baslik({ ikon, metin }: { ikon: React.ReactNode; metin: string }) {
   );
 }
 
-function rozet(temiz: boolean): React.CSSProperties {
-  return {
-    background: temiz ? 'rgba(22,163,74,0.12)' : 'rgba(225,29,72,0.1)',
-    color: temiz ? 'var(--durum-temiz)' : 'var(--durum-borclu)',
-    padding: '0.2rem 0.6rem',
-    borderRadius: 999,
-    fontSize: '0.72rem',
-    fontWeight: 800,
-    whiteSpace: 'nowrap',
-  };
-}
-
 const cipSari: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -436,8 +521,3 @@ const cipSari: React.CSSProperties = {
 
 const kutu: React.CSSProperties = { overflow: 'hidden' };
 const bos: React.CSSProperties = { padding: '1.5rem', color: 'var(--yazi-soft)', margin: 0, textAlign: 'center' };
-const tablo: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' };
-const th: React.CSSProperties = { textAlign: 'left', padding: '0.7rem 0.8rem', fontSize: '0.74rem', color: 'var(--yazi-soft)', textTransform: 'uppercase', letterSpacing: '0.4px' };
-const thSag: React.CSSProperties = { ...th, textAlign: 'right' };
-const td: React.CSSProperties = { padding: '0.7rem 0.8rem' };
-const tdSag: React.CSSProperties = { padding: '0.7rem 0.8rem', textAlign: 'right', whiteSpace: 'nowrap' };

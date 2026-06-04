@@ -221,6 +221,14 @@ textarea {
   gap: 1rem;
 }
 
+/* Firma kalan borç kartları (premium sarı kutular) */
+.firma-kart-izgara {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
 /* Firma Cari: telefonda tek kolon */
 @media (max-width: 760px) {
   .basak-cari-izgara {
